@@ -43,19 +43,22 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
     """Validate the user input allows us to connect."""
     _LOGGER.debug("Validating user input for Meteoblue setup")
-    _LOGGER.debug("Input data: %s", {k: "***" if k == CONF_API_KEY else v for k, v in data.items()})
-    
+    _LOGGER.debug(
+        "Input data: %s",
+        {k: "***" if k == CONF_API_KEY else v for k, v in data.items()},
+    )
+
     session = async_get_clientsession(hass)
-    
+
     # Use provided coordinates or fall back to Home Assistant defaults
     latitude = data.get(CONF_LATITUDE, hass.config.latitude)
     longitude = data.get(CONF_LONGITUDE, hass.config.longitude)
-    
+
     _LOGGER.debug("Using coordinates: lat=%s, lon=%s", latitude, longitude)
-    
+
     if latitude is None or longitude is None:
         _LOGGER.error("No valid coordinates provided or configured in Home Assistant")
-        raise ValueError("Latitude and longitude must be provided")    # Test API call
+        raise ValueError("Latitude and longitude must be provided")  # Test API call
     url = f"{API_URL_BASE}/basic-1h"
     params = {
         "lat": latitude,
@@ -71,12 +74,12 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     _LOGGER.debug("Testing API connection to: %s", url)
     safe_params = {k: "***" if k == "apikey" else v for k, v in params.items()}
     _LOGGER.debug("Test request parameters: %s", safe_params)
-    
+
     try:
         async with asyncio.timeout(30):
             async with session.get(url, params=params) as response:
                 _LOGGER.debug("Test API response status: %s", response.status)
-                
+
                 if response.status == 401:
                     _LOGGER.error("API key validation failed")
                     raise InvalidAuth("Invalid API key")
@@ -84,18 +87,20 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
                     _LOGGER.error("API rate limit exceeded during validation")
                     raise CannotConnect("API rate limit exceeded")
                 elif response.status != 200:
-                    _LOGGER.error("API validation failed with status: %s", response.status)
+                    _LOGGER.error(
+                        "API validation failed with status: %s", response.status
+                    )
                     raise CannotConnect(f"API returned status {response.status}")
-                
+
                 result = await response.json()
                 _LOGGER.debug("API validation successful")
-                
+
                 # Return location name if available
                 location_name = DEFAULT_NAME
                 if "metadata" in result and "name" in result["metadata"]:
                     location_name = result["metadata"]["name"]
                     _LOGGER.debug("Detected location name: %s", location_name)
-                
+
                 return {"title": location_name}
 
     except asyncio.TimeoutError as ex:
@@ -117,7 +122,7 @@ class MeteoblueConfigFlow(ConfigFlow, domain=DOMAIN):
         """Handle the initial step."""
         _LOGGER.debug("Config flow step_user called")
         errors: dict[str, str] = {}
-        
+
         if user_input is not None:
             _LOGGER.info("Processing user input for Meteoblue config")
             try:
@@ -133,7 +138,9 @@ class MeteoblueConfigFlow(ConfigFlow, domain=DOMAIN):
                 _LOGGER.error("Invalid location data: %s", ex)
                 errors["base"] = "invalid_location"
             except Exception as ex:
-                _LOGGER.error("Unexpected exception during validation: %s", ex, exc_info=True)
+                _LOGGER.error(
+                    "Unexpected exception during validation: %s", ex, exc_info=True
+                )
                 errors["base"] = "unknown"
             else:
                 # Check if already configured
@@ -145,7 +152,9 @@ class MeteoblueConfigFlow(ConfigFlow, domain=DOMAIN):
                 _LOGGER.info("Creating config entry for Meteoblue: %s", info["title"])
                 return self.async_create_entry(title=info["title"], data=user_input)
         else:
-            _LOGGER.debug("Showing initial config form")        return self.async_show_form(
+            _LOGGER.debug("Showing initial config form")
+
+        return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
 
