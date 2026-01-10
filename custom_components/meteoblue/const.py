@@ -58,46 +58,16 @@ DEFAULT_FORECAST_DAYS = 7
 # Meteoblue pictocodes to Home Assistant conditions mapping
 # Based on Meteoblue pictocode documentation
 CONDITIONS_MAP = {
-    ATTR_CONDITION_SUNNY: {1, 2},  # Clear sky, Few clouds
-    ATTR_CONDITION_PARTLYCLOUDY: {3, 4},  # Partly cloudy, Broken clouds
-    ATTR_CONDITION_CLOUDY: {5},  # Overcast
-    ATTR_CONDITION_FOG: {6, 7},  # Fog, Light fog
-    ATTR_CONDITION_RAINY: {
-        8,
-        9,
-        10,
-        23,
-        24,
-        25,
-    },  # Light rain, Rain, Heavy rain, Light shower, Shower, Heavy shower
-    ATTR_CONDITION_POURING: {11, 26},  # Violent rain, Violent shower
-    ATTR_CONDITION_SNOWY: {
-        12,
-        13,
-        14,
-        27,
-        28,
-        29,
-    },  # Light snow, Snow, Heavy snow, Light snow shower, Snow shower, Heavy snow shower
-    ATTR_CONDITION_SNOWY_RAINY: {
-        15,
-        16,
-        17,
-        30,
-        31,
-        32,
-    },  # Light sleet, Sleet, Heavy sleet, Light sleet shower, Sleet shower, Heavy sleet shower
-    ATTR_CONDITION_LIGHTNING_RAINY: {
-        18,
-        19,
-        20,
-        21,
-        22,
-        33,
-        34,
-        35,
-    },  # Thunderstorm, Light thunderstorm, Heavy thunderstorm, Hail, Heavy hail, Light thunderstorm with rain, Thunderstorm with rain, Heavy thunderstorm with rain
-    ATTR_CONDITION_CLEAR_NIGHT: {1, 2},  # Clear sky, Few clouds (night)
+    ATTR_CONDITION_SUNNY: {1},
+    ATTR_CONDITION_PARTLYCLOUDY: {2, 3},
+    ATTR_CONDITION_CLOUDY: {4},
+    ATTR_CONDITION_FOG: {5},
+    ATTR_CONDITION_RAINY: {7, 12, 14, 16},
+    ATTR_CONDITION_POURING: {6},
+    ATTR_CONDITION_SNOWY: {9, 10, 13, 15, 17},
+    ATTR_CONDITION_SNOWY_RAINY: {11},
+    ATTR_CONDITION_LIGHTNING_RAINY: {8},
+    ATTR_CONDITION_CLEAR_NIGHT: {},
 }
 
 # Reverse mapping for lookup
