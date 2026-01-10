@@ -1,11 +1,12 @@
 {
     "domain": "meteoblue",
-    "name": "Meteoblue",
+    "name": "Meteoblue Weather",
     "codeowners": [
-        "@ludwig"
+        "@lud-hu"
     ],
     "config_flow": true,
-    "documentation": "https://github.com/ludwig/meteoblue-home-assistant",
+    "documentation": "https://github.com/lud-hu/home-assistant-meteo-blue",
+    "issue_tracker": "https://github.com/lud-hu/home-assistant-meteo-blue/issues",
     "integration_type": "service",
     "iot_class": "cloud_polling",
     "loggers": [
@@ -14,5 +15,5 @@
     "requirements": [
         "aiohttp>=3.8.0"
     ],
-    "version": "1.0.0"
+    "version": "0.1.0"
 }

@@ -2,7 +2,7 @@
     "config": {
         "step": {
             "user": {
-                "title": "Meteoblue",
+                "title": "Meteoblue Weather",
                 "description": "Set up Meteoblue to get weather data.",
                 "data": {
                     "api_key": "API Key",
@@ -26,10 +26,7 @@
     "options": {
         "step": {
             "init": {
-                "title": "Meteoblue Options",
-                "data": {
-                    "scan_interval": "Update interval (seconds)"
-                }
+                "title": "Meteoblue Options"
             }
         }
     }
