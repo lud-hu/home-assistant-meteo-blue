@@ -34,10 +34,14 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util import dt as dt_util
 
-from .const import ATTR_MAP, DEFAULT_NAME, DOMAIN
+from .const import ATTR_MAP, DEFAULT_NAME, DOMAIN, ENABLE_DEBUG_LOGGING
 from .coordinator import MeteoblueConfigEntry, MeteoblueDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
+
+# Disable debug logging if flag is False
+if not ENABLE_DEBUG_LOGGING:
+    _LOGGER.setLevel(logging.INFO)
 
 
 async def async_setup_entry(
@@ -46,12 +50,14 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Meteoblue weather entity."""
+    _LOGGER.debug("Setting up Meteoblue weather entity")
     coordinator = config_entry.runtime_data
     name = config_entry.data.get(CONF_NAME, DEFAULT_NAME)
-
-    async_add_entities([MeteoblueWeatherEntity(coordinator, name)], False)
-
-
+    
+    _LOGGER.info("Creating weather entity: %s", name)
+    weather_entity = MeteoblueWeatherEntity(coordinator, name)
+    async_add_entities([weather_entity], False)
+    _LOGGER.debug("Weather entity added successfully")
 class MeteoblueWeatherEntity(WeatherEntity):
     """Implementation of Meteoblue weather entity."""
 
@@ -72,6 +78,7 @@ class MeteoblueWeatherEntity(WeatherEntity):
         name: str,
     ) -> None:
         """Initialize the weather entity."""
+        _LOGGER.debug("Initializing weather entity: %s", name)
         self.coordinator = coordinator
         self._attr_device_info = {
             "identifiers": {(DOMAIN, coordinator.config_entry.entry_id)},
@@ -81,6 +88,9 @@ class MeteoblueWeatherEntity(WeatherEntity):
             "configuration_url": "https://www.meteoblue.com/",
         }
         self._attr_unique_id = f"{coordinator.config_entry.entry_id}_weather"
+        _LOGGER.debug("Weather entity initialized with unique_id: %s", self._attr_unique_id)
+            "Weather entity initialized with unique_id: %s", self._attr_unique_id
+        )
 
     @property
     def available(self) -> bool:
@@ -159,11 +169,17 @@ class MeteoblueWeatherEntity(WeatherEntity):
 
     async def async_forecast_daily(self) -> list[Forecast] | None:
         """Return the daily forecast."""
+        _LOGGER.debug("Fetching daily forecast")
         if not self.coordinator.daily_forecast:
+            _LOGGER.debug("No daily forecast data available")
             return None
 
         forecasts = []
-        for day_data in self.coordinator.daily_forecast:
+        _LOGGER.debug(
+            "Processing %s daily forecast entries", len(self.coordinator.daily_forecast)
+        )
+        for i, day_data in enumerate(self.coordinator.daily_forecast):
+            _LOGGER.debug("Processing daily forecast %s: %s", i, day_data.get("time"))
             forecast = Forecast(
                 datetime=dt_util.parse_datetime(day_data["time"]),
                 condition=day_data.get("condition"),
@@ -179,15 +195,23 @@ class MeteoblueWeatherEntity(WeatherEntity):
             )
             forecasts.append(forecast)
 
+        _LOGGER.debug("Generated %s daily forecasts", len(forecasts))
         return forecasts
 
     async def async_forecast_hourly(self) -> list[Forecast] | None:
         """Return the hourly forecast."""
+        _LOGGER.debug("Fetching hourly forecast")
         if not self.coordinator.hourly_forecast:
+            _LOGGER.debug("No hourly forecast data available")
             return None
 
         forecasts = []
-        for hour_data in self.coordinator.hourly_forecast:
+        _LOGGER.debug(
+            "Processing %s hourly forecast entries",
+            len(self.coordinator.hourly_forecast),
+        )
+        for i, hour_data in enumerate(self.coordinator.hourly_forecast):
+            _LOGGER.debug("Processing hourly forecast %s: %s", i, hour_data.get("time"))
             forecast = Forecast(
                 datetime=dt_util.parse_datetime(hour_data["time"]),
                 condition=hour_data.get("condition"),
@@ -202,15 +226,20 @@ class MeteoblueWeatherEntity(WeatherEntity):
             )
             forecasts.append(forecast)
 
+        _LOGGER.debug("Generated %s hourly forecasts", len(forecasts))
         return forecasts
 
     async def async_update(self) -> None:
         """Update the entity."""
+        _LOGGER.debug("Manual update requested for weather entity")
         await self.coordinator.async_request_refresh()
+        _LOGGER.debug("Manual update completed")
 
     async def async_added_to_hass(self) -> None:
         """When entity is added to hass."""
+        _LOGGER.info("Weather entity %s added to Home Assistant", self._attr_unique_id)
         await super().async_added_to_hass()
         self.async_on_remove(
             self.coordinator.async_add_listener(self.async_write_ha_state)
         )
+        _LOGGER.debug("Coordinator listener registered for weather entity")

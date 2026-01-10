@@ -111,13 +111,33 @@ Meteoblue pictocodes are automatically mapped to Home Assistant conditions:
 
 ### Debug Logging
 
-Enable detailed logging by adding this to your `configuration.yaml`:
+The integration includes comprehensive debug logging that can be easily controlled.
 
-```yaml
-logger:
-  logs:
-    custom_components.meteoblue: debug
-```
+**Enable/Disable Debug Logging:**
+
+1. **Via Code (Development):** Edit `custom_components/meteoblue/const.py`:
+
+   ```python
+   # Set to True to enable debug logs, False to disable them
+   ENABLE_DEBUG_LOGGING = True
+   ```
+
+   When `ENABLE_DEBUG_LOGGING = False`, the logger level is set to INFO, effectively disabling all debug messages while keeping info, warning, and error messages.
+
+2. **Via Home Assistant Configuration:** Add to `configuration.yaml`:
+   ```yaml
+   logger:
+     default: info
+     logs:
+       custom_components.meteoblue: debug # or info, warning, error
+   ```
+
+**What Gets Logged:**
+
+- API requests and responses (with masked API keys)
+- Data processing steps and results
+- Entity state changes and updates
+- Error conditions with full context
 
 ## 📊 API Limits
 

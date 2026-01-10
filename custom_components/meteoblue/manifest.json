@@ -9,7 +9,7 @@
     "integration_type": "service",
     "iot_class": "cloud_polling",
     "loggers": [
-        "meteoblue"
+        "custom_components.meteoblue"
     ],
     "requirements": [
         "aiohttp>=3.8.0"

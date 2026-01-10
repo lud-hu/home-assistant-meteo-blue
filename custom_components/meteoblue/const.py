@@ -38,6 +38,9 @@ from homeassistant.components.weather import (
 
 DOMAIN = "meteoblue"
 
+# Debug logging control - set to False to disable all debug logs
+ENABLE_DEBUG_LOGGING = True
+
 DEFAULT_NAME = "Meteoblue"
 DEFAULT_SCAN_INTERVAL = 600  # 10 minutes
 

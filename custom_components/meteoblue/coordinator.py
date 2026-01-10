@@ -22,10 +22,16 @@ from .const import (
     DEFAULT_PACKAGES,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
+    ENABLE_DEBUG_LOGGING,
     PICTOCODE_TO_CONDITION,
 )
 
 _LOGGER = logging.getLogger(__name__)
+
+# Disable debug logging if flag is False
+if not ENABLE_DEBUG_LOGGING:
+    _LOGGER.setLevel(logging.INFO)
+
 
 type MeteoblueConfigEntry = ConfigEntry[MeteoblueDataUpdateCoordinator]
 
@@ -46,6 +52,14 @@ class MeteoblueDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._elevation = config_entry.data.get(CONF_ELEVATION)
         self._session = async_get_clientsession(hass)
 
+        _LOGGER.debug(
+            "Initializing coordinator with coordinates: lat=%s, lon=%s, elevation=%s",
+            self._latitude,
+            self._longitude,
+            self._elevation,
+        )
+        _LOGGER.debug("API key configured: %s", bool(self._api_key))
+
         super().__init__(
             hass,
             _LOGGER,
@@ -53,11 +67,29 @@ class MeteoblueDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             update_interval=timedelta(seconds=DEFAULT_SCAN_INTERVAL),
         )
 
+        _LOGGER.info(
+            "Coordinator initialized with update interval: %s seconds",
+            DEFAULT_SCAN_INTERVAL,
+        )
+
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from Meteoblue API."""
+        _LOGGER.debug(
+            "Starting data update for coordinates: lat=%s, lon=%s",
+            self._latitude,
+            self._longitude,
+        )
         try:
-            return await self._fetch_weather_data()
+            data = await self._fetch_weather_data()
+            _LOGGER.info("Successfully fetched weather data")
+            _LOGGER.debug(
+                "Data contains keys: %s", list(data.keys()) if data else "None"
+            )
+            return data
         except Exception as ex:
+            _LOGGER.error(
+                "Error communicating with Meteoblue API: %s", ex, exc_info=True
+            )
             raise UpdateFailed(f"Error communicating with Meteoblue API: {ex}") from ex
 
     async def _fetch_weather_data(self) -> dict[str, Any]:
@@ -75,22 +107,40 @@ class MeteoblueDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         if self._elevation is not None:
             params["asl"] = self._elevation
 
+        # Log API request (without exposing API key)
+        safe_params = {k: "***" if k == "apikey" else v for k, v in params.items()}
+        _LOGGER.debug("Making API request to: %s", url)
+        _LOGGER.debug("Request parameters: %s", safe_params)
+
         try:
             async with asyncio.timeout(30):
                 async with self._session.get(url, params=params) as response:
+                    _LOGGER.debug("API response status: %s", response.status)
+                    _LOGGER.debug("API response headers: %s", dict(response.headers))
+
                     if response.status == 401:
+                        _LOGGER.error("API authentication failed - check API key")
                         raise UpdateFailed("Invalid API key")
                     elif response.status == 429:
+                        _LOGGER.warning("API rate limit exceeded")
                         raise UpdateFailed("API rate limit exceeded")
                     elif response.status != 200:
+                        _LOGGER.error(
+                            "API returned unexpected status: %s", response.status
+                        )
+                        response_text = await response.text()
+                        _LOGGER.debug("API error response: %s", response_text)
                         raise UpdateFailed(f"API returned status {response.status}")
 
                     data = await response.json()
+                    _LOGGER.debug("Received API response with %s bytes", len(str(data)))
                     return self._process_weather_data(data)
 
         except asyncio.TimeoutError as ex:
+            _LOGGER.error("Timeout communicating with Meteoblue API after 30 seconds")
             raise UpdateFailed("Timeout communicating with Meteoblue API") from ex
         except aiohttp.ClientError as ex:
+            _LOGGER.error("Network error communicating with Meteoblue API: %s", ex)
             raise UpdateFailed(f"Error communicating with Meteoblue API: {ex}") from ex
 
     def _process_weather_data(self, raw_data: dict[str, Any]) -> dict[str, Any]:
