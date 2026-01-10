@@ -1,0 +1,27 @@
+{
+    "name": "Meteoblue Weather",
+    "country": [
+        "DE",
+        "AT",
+        "CH",
+        "FR",
+        "GB",
+        "US",
+        "CA",
+        "AU",
+        "NZ",
+        "SE",
+        "NO",
+        "DK",
+        "FI",
+        "NL",
+        "BE",
+        "IT",
+        "ES",
+        "PT"
+    ],
+    "render_readme": true,
+    "zip_release": false,
+    "filename": "meteoblue.zip",
+    "hide_default_branch": false
+}

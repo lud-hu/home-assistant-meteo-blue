@@ -1,103 +1,117 @@
-# Meteoblue Home Assistant Integration
+# Meteoblue Weather Integration for Home Assistant
 
-This is a custom Home Assistant integration for the Meteoblue weather service API. It provides weather data including current conditions, hourly forecasts, and daily forecasts.
+[![HACS Badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
+[![GitHub Release](https://img.shields.io/github/release/ludwig/meteoblue-home-assistant?style=for-the-badge&color=brightgreen)](https://github.com/ludwig/meteoblue-home-assistant/releases)
 
-## Features
+A custom Home Assistant integration for the **Meteoblue** weather service API. Get accurate weather data including current conditions, hourly forecasts, and daily forecasts directly from one of Europe's most trusted weather services.
 
-- Current weather conditions
-- Hourly forecasts (next 24 hours)
-- Daily forecasts (up to 7 days)
-- Configurable location coordinates
-- API key authentication
-- Automatic weather condition mapping from Meteoblue pictocodes
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=ludwig&repository=meteoblue-home-assistant&category=integration)
 
-## Installation
+## ✨ Features
+
+- 🌡️ **Current weather conditions** (temperature, humidity, pressure, wind, UV index)
+- ⏰ **Hourly forecasts** (next 24 hours with detailed data)
+- 📅 **Daily forecasts** (up to 7 days with min/max temperatures)
+- 🌍 **Flexible location setup** (use HA location or specify custom coordinates)
+- 🔑 **Secure API key authentication**
+- 🎯 **Automatic weather condition mapping** from Meteoblue pictocodes to HA conditions
+- ⚡ **Efficient data updates** with built-in error handling and rate limiting
+
+## 🚀 Installation
 
 ### HACS (Recommended)
 
-1. Add this repository to HACS as a custom repository
-2. Install the integration through HACS
-3. Restart Home Assistant
+1. Open HACS in your Home Assistant instance
+2. Go to "Integrations"
+3. Click the 3 dots (top right) → "Custom repositories"
+4. Add this repository URL: `https://github.com/ludwig/meteoblue-home-assistant`
+5. Category: "Integration"
+6. Click "Add", then install "Meteoblue Weather"
+7. **Restart Home Assistant**
 
 ### Manual Installation
 
-1. Copy the `meteoblue` folder to your `custom_components` directory
+1. Copy the `custom_components/meteoblue` folder to your Home Assistant `custom_components` directory
 2. Restart Home Assistant
 
-## Configuration
+## ⚙️ Configuration
 
 ### Prerequisites
 
-You need a Meteoblue API key to use this integration. You can obtain one from:
-https://content.meteoblue.com/en/business-solutions/weather-apis
+You need a **Meteoblue API key** to use this integration.
+
+📋 **Get your free API key:**
+
+1. Visit [Meteoblue Developer Portal](https://content.meteoblue.com/en/business-solutions/weather-apis)
+2. Sign up for a free account
+3. Choose a plan (free tier includes 1000+ calls/day)
+4. Copy your API key
 
 ### Setup
 
-1. Go to **Settings** → **Devices & Services**
-2. Click **Add Integration**
-3. Search for "Meteoblue"
-4. Enter your configuration:
-   - **API Key**: Your Meteoblue API key (required)
-   - **Name**: A name for this weather station (optional, defaults to "Meteoblue")
-   - **Latitude**: Location latitude (optional, uses Home Assistant location if not provided)
-   - **Longitude**: Location longitude (optional, uses Home Assistant location if not provided)
-   - **Elevation**: Location elevation in meters (optional, auto-detected if not provided)
+1. Go to **Settings** → **Devices & Services** → **Add Integration**
+2. Search for "**Meteoblue**"
+3. Enter your configuration:
+   - **🔑 API Key**: Your Meteoblue API key _(required)_
+   - **📍 Name**: Custom name for this weather station _(optional)_
+   - **🌍 Latitude**: Location latitude _(optional - uses HA location)_
+   - **🌍 Longitude**: Location longitude _(optional - uses HA location)_
+   - **🏔️ Elevation**: Location elevation in meters _(optional - auto-detected)_
 
-## API Usage
+## 🌦️ Weather Data
 
-The integration uses the Meteoblue Forecast API with the following packages:
+### Current Conditions
 
-- `basic-1h`: Hourly temperature, humidity, wind, precipitation
-- `basic-day`: Daily min/max temperatures and weather conditions
-
-The API is called every 10 minutes by default to fetch updated weather data.
-
-## Supported Weather Attributes
-
-### Current Weather
-
-- Temperature
-- Humidity
-- Pressure
-- Wind speed and direction
-- Wind gust speed
-- Visibility
-- UV index
-- Weather condition
+- 🌡️ Temperature, humidity, pressure
+- 💨 Wind speed, direction, and gusts
+- ☀️ UV index and visibility
+- ☁️ Cloud coverage and weather condition
 
 ### Forecasts
 
-- Temperature (min/max for daily)
-- Precipitation amount and probability
-- Wind speed, direction, and gusts
-- Humidity
-- Weather condition
-- UV index
+- **Hourly**: Next 24 hours with detailed metrics
+- **Daily**: Up to 7 days with min/max temperatures
+- 🌧️ Precipitation amount and probability
+- 💨 Wind conditions and humidity
+- ☀️ UV index predictions
 
-## Weather Condition Mapping
+## 🔧 Technical Details
 
-Meteoblue pictocodes are automatically mapped to Home Assistant weather conditions:
+### API Usage
 
-- Clear/Sunny
-- Partly Cloudy
-- Cloudy
-- Fog
-- Rainy
-- Snowy
-- Snow/Rain mix
-- Thunderstorm
+The integration uses the Meteoblue Forecast API:
 
-## Troubleshooting
+- **Packages**: `basic-1h` (hourly) + `basic-day` (daily)
+- **Updates**: Every 10 minutes (configurable)
+- **Rate Limits**: Respects API limits (500 calls/min, daily quota)
+
+### Weather Condition Mapping
+
+Meteoblue pictocodes are automatically mapped to Home Assistant conditions:
+
+- ☀️ Clear/Sunny → `sunny`
+- ⛅ Partly Cloudy → `partlycloudy`
+- ☁️ Cloudy/Overcast → `cloudy`
+- 🌫️ Fog → `fog`
+- 🌧️ Rain (light/heavy) → `rainy` / `pouring`
+- ❄️ Snow → `snowy`
+- 🌨️ Mixed precipitation → `snowy-rainy`
+- ⛈️ Thunderstorms → `lightning-rainy`
+
+## 🐛 Troubleshooting
 
 ### Common Issues
 
-1. **Invalid API Key**: Verify your Meteoblue API key is correct and has sufficient quota
-2. **Cannot Connect**: Check your internet connection and API endpoint availability
-3. **Rate Limit Exceeded**: Reduce polling frequency or check your API usage limits
+| Problem                    | Solution                                                |
+| -------------------------- | ------------------------------------------------------- |
+| ❌ **Invalid API Key**     | Verify your Meteoblue API key is correct and active     |
+| 🌐 **Cannot Connect**      | Check internet connection and API endpoint availability |
+| ⏱️ **Rate Limit Exceeded** | Reduce polling frequency or check API usage limits      |
+| 📍 **Wrong Location Data** | Verify latitude/longitude coordinates are correct       |
 
-### Logging
+### Debug Logging
 
-To enable debug logging for this integration, add the following to your `configuration.yaml`:
+Enable detailed logging by adding this to your `configuration.yaml`:
 
 ```yaml
 logger:
@@ -105,18 +119,28 @@ logger:
     custom_components.meteoblue: debug
 ```
 
-## API Limits
+## 📊 API Limits
 
-Be aware of your Meteoblue API limits:
+**Free Tier Limits:**
 
-- Free tier typically allows 1000 calls per day
-- Rate limit of 500 calls per minute
-- Monitor your usage in the Meteoblue dashboard
+- 🎯 1,000+ calls per day
+- ⚡ 500 calls per minute
+- 📈 Monitor usage in [Meteoblue Dashboard](https://www.meteoblue.com/)
 
-## Contributing
+## 🤝 Contributing
 
-This integration is based on the official Met.no integration structure and follows Home Assistant development guidelines.
+Found a bug or have a feature request?
 
-## License
+- 🐛 [Report Issues](https://github.com/ludwig/meteoblue-home-assistant/issues)
+- 💡 [Request Features](https://github.com/ludwig/meteoblue-home-assistant/discussions)
+- 🔧 [Submit Pull Requests](https://github.com/ludwig/meteoblue-home-assistant/pulls)
 
-This project is provided as-is for educational and personal use.
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+<p align="center">
+  <strong>🌤️ Enjoying accurate weather data? Give this repo a ⭐!</strong>
+</p>
