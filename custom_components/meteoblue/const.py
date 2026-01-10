@@ -42,7 +42,12 @@ DOMAIN = "meteoblue"
 ENABLE_DEBUG_LOGGING = True
 
 DEFAULT_NAME = "Meteoblue"
-DEFAULT_SCAN_INTERVAL = 600  # 10 minutes
+
+# 6 hour interval because:
+# One "basic-day" requests costs 4000 credits per call
+# 4 calls per day result in 5,840,000 credits per year.
+# The free tier provides 10,000,000 credits per year.
+DEFAULT_SCAN_INTERVAL = 60 * 60 * 6  # 6 hours
 
 # Configuration keys
 CONF_API_KEY = "api_key"
@@ -52,7 +57,7 @@ CONF_ELEVATION = "elevation"
 
 # API constants
 API_URL_BASE = "https://my.meteoblue.com/packages"
-DEFAULT_PACKAGES = "basic-1h_basic-day"
+DEFAULT_PACKAGES = "basic-day"
 DEFAULT_FORECAST_DAYS = 7
 
 # Meteoblue pictocodes to Home Assistant conditions mapping

@@ -70,9 +70,7 @@ class MeteoblueWeatherEntity(WeatherEntity):
     _attr_native_pressure_unit = UnitOfPressure.HPA
     _attr_native_wind_speed_unit = UnitOfSpeed.METERS_PER_SECOND
     _attr_native_visibility_unit = UnitOfLength.KILOMETERS
-    _attr_supported_features = (
-        WeatherEntityFeature.FORECAST_DAILY | WeatherEntityFeature.FORECAST_HOURLY
-    )
+    _attr_supported_features = WeatherEntityFeature.FORECAST_DAILY
 
     def __init__(
         self,
@@ -198,37 +196,6 @@ class MeteoblueWeatherEntity(WeatherEntity):
             forecasts.append(forecast)
 
         _LOGGER.debug("Generated %s daily forecasts", len(forecasts))
-        return forecasts
-
-    async def async_forecast_hourly(self) -> list[Forecast] | None:
-        """Return the hourly forecast."""
-        _LOGGER.debug("Fetching hourly forecast")
-        if not self.coordinator.hourly_forecast:
-            _LOGGER.debug("No hourly forecast data available")
-            return None
-
-        forecasts = []
-        _LOGGER.debug(
-            "Processing %s hourly forecast entries",
-            len(self.coordinator.hourly_forecast),
-        )
-        for i, hour_data in enumerate(self.coordinator.hourly_forecast):
-            _LOGGER.debug("Processing hourly forecast %s: %s", i, hour_data.get("time"))
-            forecast = Forecast(
-                datetime=dt_util.parse_datetime(hour_data["time"]),
-                condition=hour_data.get("condition"),
-                native_temperature=hour_data.get("temperature"),
-                native_precipitation=hour_data.get("precipitation"),
-                precipitation_probability=hour_data.get("precipitation_probability"),
-                wind_bearing=hour_data.get("wind_direction"),
-                native_wind_speed=hour_data.get("wind_speed"),
-                native_wind_gust_speed=hour_data.get("wind_gust"),
-                humidity=hour_data.get("relative_humidity"),
-                uv_index=hour_data.get("uv_index"),
-            )
-            forecasts.append(forecast)
-
-        _LOGGER.debug("Generated %s hourly forecasts", len(forecasts))
         return forecasts
 
     async def async_update(self) -> None:

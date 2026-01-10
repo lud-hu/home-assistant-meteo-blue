@@ -3,14 +3,13 @@
 [![HACS Badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
 [![GitHub Release](https://img.shields.io/github/release/ludwig/meteoblue-home-assistant?style=for-the-badge&color=brightgreen)](https://github.com/ludwig/meteoblue-home-assistant/releases)
 
-A custom Home Assistant integration for the **Meteoblue** weather service API. Get accurate weather data including current conditions, hourly forecasts, and daily forecasts directly from one of Europe's most trusted weather services.
+A custom Home Assistant integration for the **Meteoblue** weather service API. Get accurate weather data including current conditions and daily forecasts directly from one of Europe's most trusted weather services.
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=ludwig&repository=meteoblue-home-assistant&category=integration)
 
 ## ✨ Features
 
 - 🌡️ **Current weather conditions** (temperature, humidity, pressure, wind, UV index)
-- ⏰ **Hourly forecasts** (next 24 hours with detailed data)
 - 📅 **Daily forecasts** (up to 7 days with min/max temperatures)
 - 🌍 **Flexible location setup** (use HA location or specify custom coordinates)
 - 🔑 **Secure API key authentication**
@@ -69,7 +68,6 @@ You need a **Meteoblue API key** to use this integration.
 
 ### Forecasts
 
-- **Hourly**: Next 24 hours with detailed metrics
 - **Daily**: Up to 7 days with min/max temperatures
 - 🌧️ Precipitation amount and probability
 - 💨 Wind conditions and humidity
@@ -81,7 +79,7 @@ You need a **Meteoblue API key** to use this integration.
 
 The integration uses the Meteoblue Forecast API:
 
-- **Packages**: `basic-1h` (hourly) + `basic-day` (daily)
+- **Packages**: `basic-day` (daily)
 - **Updates**: Every 10 minutes (configurable)
 - **Rate Limits**: Respects API limits (500 calls/min, daily quota)
 

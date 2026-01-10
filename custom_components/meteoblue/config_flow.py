@@ -59,7 +59,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     if latitude is None or longitude is None:
         _LOGGER.error("No valid coordinates provided or configured in Home Assistant")
         raise ValueError("Latitude and longitude must be provided")  # Test API call
-    url = f"{API_URL_BASE}/basic-1h"
+    url = f"{API_URL_BASE}/basic-day"
     params = {
         "lat": latitude,
         "lon": longitude,

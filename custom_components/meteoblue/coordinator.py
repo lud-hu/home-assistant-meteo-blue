@@ -149,73 +149,27 @@ class MeteoblueDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             "metadata": raw_data.get("metadata", {}),
             "units": raw_data.get("units", {}),
             "current": None,
-            "hourly_forecast": [],
             "daily_forecast": [],
         }
-
-        # Process hourly data (current conditions + forecast)
-        if "data_1h" in raw_data:
-            hourly_data = raw_data["data_1h"]
-            processed_data["current"] = self._extract_current_conditions(hourly_data)
-            processed_data["hourly_forecast"] = self._extract_hourly_forecast(
-                hourly_data
-            )
 
         # Process daily forecast
         if "data_day" in raw_data:
             daily_data = raw_data["data_day"]
             processed_data["daily_forecast"] = self._extract_daily_forecast(daily_data)
+            # Use first day data as current conditions
+            if processed_data["daily_forecast"]:
+                processed_data["current"] = processed_data["daily_forecast"][0].copy()
+                # Convert daily data to current format for compatibility
+                if "temperature_max" in processed_data["current"]:
+                    processed_data["current"]["temperature"] = processed_data[
+                        "current"
+                    ]["temperature_max"]
+                if "temperature_min" in processed_data["current"]:
+                    processed_data["current"]["temperature_low"] = processed_data[
+                        "current"
+                    ]["temperature_min"]
 
         return processed_data
-
-    def _extract_current_conditions(
-        self, hourly_data: dict[str, Any]
-    ) -> dict[str, Any] | None:
-        """Extract current weather conditions from hourly data."""
-        if not hourly_data.get("time") or len(hourly_data["time"]) == 0:
-            return None
-
-        # Use the first hour as current conditions
-        current = {"time": hourly_data["time"][0]}
-
-        for key, values in hourly_data.items():
-            if key != "time" and values and len(values) > 0:
-                current[key] = values[0]
-
-        # Convert pictocode to condition
-        if "pictocode" in current:
-            current["condition"] = PICTOCODE_TO_CONDITION.get(
-                current["pictocode"], "unknown"
-            )
-
-        return current
-
-    def _extract_hourly_forecast(
-        self, hourly_data: dict[str, Any]
-    ) -> list[dict[str, Any]]:
-        """Extract hourly forecast from API data."""
-        if not hourly_data.get("time"):
-            return []
-
-        forecast = []
-        time_list = hourly_data["time"]
-
-        for i in range(1, min(len(time_list), 25)):  # Next 24 hours
-            hour_data = {"time": time_list[i]}
-
-            for key, values in hourly_data.items():
-                if key != "time" and values and len(values) > i:
-                    hour_data[key] = values[i]
-
-            # Convert pictocode to condition
-            if "pictocode" in hour_data:
-                hour_data["condition"] = PICTOCODE_TO_CONDITION.get(
-                    hour_data["pictocode"], "unknown"
-                )
-
-            forecast.append(hour_data)
-
-        return forecast
 
     def _extract_daily_forecast(
         self, daily_data: dict[str, Any]
@@ -260,8 +214,3 @@ class MeteoblueDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     def daily_forecast(self) -> list[dict[str, Any]]:
         """Return daily forecast data."""
         return self.data.get("daily_forecast", []) if self.data else []
-
-    @property
-    def hourly_forecast(self) -> list[dict[str, Any]]:
-        """Return hourly forecast data."""
-        return self.data.get("hourly_forecast", []) if self.data else []
