@@ -53,11 +53,13 @@ async def async_setup_entry(
     _LOGGER.debug("Setting up Meteoblue weather entity")
     coordinator = config_entry.runtime_data
     name = config_entry.data.get(CONF_NAME, DEFAULT_NAME)
-    
+
     _LOGGER.info("Creating weather entity: %s", name)
     weather_entity = MeteoblueWeatherEntity(coordinator, name)
     async_add_entities([weather_entity], False)
     _LOGGER.debug("Weather entity added successfully")
+
+
 class MeteoblueWeatherEntity(WeatherEntity):
     """Implementation of Meteoblue weather entity."""
 
@@ -88,7 +90,7 @@ class MeteoblueWeatherEntity(WeatherEntity):
             "configuration_url": "https://www.meteoblue.com/",
         }
         self._attr_unique_id = f"{coordinator.config_entry.entry_id}_weather"
-        _LOGGER.debug("Weather entity initialized with unique_id: %s", self._attr_unique_id)
+        _LOGGER.debug(
             "Weather entity initialized with unique_id: %s", self._attr_unique_id
         )
 
