@@ -51,6 +51,7 @@ class MeteoblueDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._longitude = config_entry.data.get(CONF_LONGITUDE, hass.config.longitude)
         self._elevation = config_entry.data.get(CONF_ELEVATION)
         self._session = async_get_clientsession(hass)
+        self._last_request_time = None
 
         _LOGGER.debug(
             "Initializing coordinator with coordinates: lat=%s, lon=%s, elevation=%s",
@@ -74,13 +75,37 @@ class MeteoblueDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from Meteoblue API."""
-        _LOGGER.debug(
-            "Starting data update for coordinates: lat=%s, lon=%s",
+        _LOGGER.info(
+            "Update triggered for coordinates: lat=%s, lon=%s",
             self._latitude,
             self._longitude,
         )
+
+        # Strict interval enforcement: only allow updates according to configured interval
+        now = datetime.now()
+        if self._last_request_time:
+            time_since_last = (now - self._last_request_time).total_seconds()
+            min_interval = DEFAULT_SCAN_INTERVAL * 0.95  # Allow 5% tolerance
+
+            if time_since_last < min_interval:
+                _LOGGER.debug(
+                    "Interval enforcement: skipping update, only %s seconds since last request (minimum: %s)",
+                    int(time_since_last),
+                    int(min_interval),
+                )
+                if self.data:
+                    return self.data
+                else:
+                    _LOGGER.warning(
+                        "No cached data available, but enforcing update interval - will wait for next scheduled update"
+                    )
+                    raise UpdateFailed(
+                        "Enforcing update interval, no cached data available"
+                    )
+
         try:
             data = await self._fetch_weather_data()
+            self._last_request_time = now
             _LOGGER.info("Successfully fetched weather data")
             _LOGGER.debug(
                 "Data contains keys: %s", list(data.keys()) if data else "None"
@@ -214,3 +239,23 @@ class MeteoblueDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     def daily_forecast(self) -> list[dict[str, Any]]:
         """Return daily forecast data."""
         return self.data.get("daily_forecast", []) if self.data else []
+
+    async def async_request_refresh(self) -> None:
+        """Request a refresh but respect the update interval."""
+        _LOGGER.debug("Manual refresh requested")
+
+        if self._last_request_time:
+            time_since_last = (datetime.now() - self._last_request_time).total_seconds()
+            min_interval = DEFAULT_SCAN_INTERVAL * 0.95  # Allow 5% tolerance
+
+            if time_since_last < min_interval:
+                remaining_time = int(min_interval - time_since_last)
+                _LOGGER.info(
+                    "Manual refresh denied - respecting update interval. Next update in %s seconds (%s minutes)",
+                    remaining_time,
+                    int(remaining_time / 60),
+                )
+                return
+
+        _LOGGER.info("Manual refresh allowed - sufficient time since last update")
+        await super().async_request_refresh()

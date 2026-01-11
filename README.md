@@ -80,7 +80,7 @@ You need a **Meteoblue API key** to use this integration.
 The integration uses the Meteoblue Forecast API:
 
 - **Packages**: `basic-day` (daily)
-- **Updates**: Every 10 minutes (configurable)
+- **Updates**: Every 6 hours (optimized for API quota)
 - **Rate Limits**: Respects API limits (500 calls/min, daily quota)
 
 ### Weather Condition Mapping

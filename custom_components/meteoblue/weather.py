@@ -198,12 +198,6 @@ class MeteoblueWeatherEntity(WeatherEntity):
         _LOGGER.debug("Generated %s daily forecasts", len(forecasts))
         return forecasts
 
-    async def async_update(self) -> None:
-        """Update the entity."""
-        _LOGGER.debug("Manual update requested for weather entity")
-        await self.coordinator.async_request_refresh()
-        _LOGGER.debug("Manual update completed")
-
     async def async_added_to_hass(self) -> None:
         """When entity is added to hass."""
         _LOGGER.info("Weather entity %s added to Home Assistant", self._attr_unique_id)

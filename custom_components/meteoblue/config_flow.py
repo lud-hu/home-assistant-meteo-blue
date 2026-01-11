@@ -144,7 +144,7 @@ class MeteoblueConfigFlow(ConfigFlow, domain=DOMAIN):
                 errors["base"] = "unknown"
             else:
                 # Check if already configured
-                unique_id = f"{user_input[CONF_API_KEY]}-{user_input.get(CONF_LATITUDE, self.hass.config.latitude)}-{user_input.get(CONF_LONGITUDE, self.hass.config.longitude)}"
+                unique_id = f"{user_input.get(CONF_LATITUDE, self.hass.config.latitude)}-{user_input.get(CONF_LONGITUDE, self.hass.config.longitude)}"
                 _LOGGER.debug("Setting unique_id: %s", unique_id[:20] + "...")
                 await self.async_set_unique_id(unique_id)
                 self._abort_if_unique_id_configured()
