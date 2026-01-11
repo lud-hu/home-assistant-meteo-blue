@@ -1,0 +1,33 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Meteoblue Weather",
+                "description": "Set up Meteoblue to get weather data.",
+                "data": {
+                    "api_key": "API Key",
+                    "name": "Name",
+                    "latitude": "Latitude",
+                    "longitude": "Longitude",
+                    "elevation": "Elevation (meters)"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Failed to connect to Meteoblue API",
+            "invalid_auth": "Invalid API key",
+            "invalid_location": "Invalid location coordinates",
+            "unknown": "Unexpected error occurred"
+        },
+        "abort": {
+            "already_configured": "Service is already configured"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Meteoblue Options"
+            }
+        }
+    }
+}

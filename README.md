@@ -1,20 +1,18 @@
 # Meteoblue Weather Integration for Home Assistant
 
-[![HACS Badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
-[![GitHub Release](https://img.shields.io/github/release/ludwig/meteoblue-home-assistant?style=for-the-badge&color=brightgreen)](https://github.com/ludwig/meteoblue-home-assistant/releases)
+A custom Home Assistant integration for the **Meteoblue** weather service API. Get accurate weather forecasts directly from one of Europe's most trusted weather services.
 
-A custom Home Assistant integration for the **Meteoblue** weather service API. Get accurate weather data including current conditions and daily forecasts directly from one of Europe's most trusted weather services.
+Note: The integration is optimized for usage with [meteoblue's free API](https://content.meteoblue.com/en/business-solutions/weather-apis) tier, therefore only daily forecasts (not hourly) are polled every 6 hours. This allows to stay within the limit of 10.000.000 credits per year.
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=ludwig&repository=meteoblue-home-assistant&category=integration)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=lud-hu&repository=home-assistant-meteo-blue&category=integration)
 
 ## ✨ Features
 
-- 🌡️ **Current weather conditions** (temperature, humidity, pressure, wind, UV index)
 - 📅 **Daily forecasts** (up to 7 days with min/max temperatures)
 - 🌍 **Flexible location setup** (use HA location or specify custom coordinates)
-- 🔑 **Secure API key authentication**
+- 🔑 **API key authentication** (use your personal meteoblue API key)
 - 🎯 **Automatic weather condition mapping** from Meteoblue pictocodes to HA conditions
-- ⚡ **Efficient data updates** with built-in error handling and rate limiting
+- ⚡ **Efficient data updates** every 6 hours to stay within free tier of API
 
 ## 🚀 Installation
 
@@ -23,7 +21,7 @@ A custom Home Assistant integration for the **Meteoblue** weather service API. G
 1. Open HACS in your Home Assistant instance
 2. Go to "Integrations"
 3. Click the 3 dots (top right) → "Custom repositories"
-4. Add this repository URL: `https://github.com/ludwig/meteoblue-home-assistant`
+4. Add this repository URL: `https://github.com/lud-hu/home-assistant-meteo-blue`
 5. Category: "Integration"
 6. Click "Add", then install "Meteoblue Weather"
 7. **Restart Home Assistant**
@@ -43,8 +41,7 @@ You need a **Meteoblue API key** to use this integration.
 
 1. Visit [Meteoblue Developer Portal](https://content.meteoblue.com/en/business-solutions/weather-apis)
 2. Sign up for a free account
-3. Choose a plan (free tier includes 1000+ calls/day)
-4. Copy your API key
+3. Copy your API key
 
 ### Setup
 
@@ -59,19 +56,11 @@ You need a **Meteoblue API key** to use this integration.
 
 ## 🌦️ Weather Data
 
-### Current Conditions
-
-- 🌡️ Temperature, humidity, pressure
-- 💨 Wind speed, direction, and gusts
-- ☀️ UV index and visibility
-- ☁️ Cloud coverage and weather condition
-
-### Forecasts
-
 - **Daily**: Up to 7 days with min/max temperatures
 - 🌧️ Precipitation amount and probability
 - 💨 Wind conditions and humidity
 - ☀️ UV index predictions
+- and more, see [API docs](https://docs.meteoblue.com/en/weather-apis/forecast-api/overview)
 
 ## 🔧 Technical Details
 
@@ -81,31 +70,13 @@ The integration uses the Meteoblue Forecast API:
 
 - **Packages**: `basic-day` (daily)
 - **Updates**: Every 6 hours (optimized for API quota)
-- **Rate Limits**: Respects API limits (500 calls/min, daily quota)
 
 ### Weather Condition Mapping
 
 Meteoblue pictocodes are automatically mapped to Home Assistant conditions:
-
-- ☀️ Clear/Sunny → `sunny`
-- ⛅ Partly Cloudy → `partlycloudy`
-- ☁️ Cloudy/Overcast → `cloudy`
-- 🌫️ Fog → `fog`
-- 🌧️ Rain (light/heavy) → `rainy` / `pouring`
-- ❄️ Snow → `snowy`
-- 🌨️ Mixed precipitation → `snowy-rainy`
-- ⛈️ Thunderstorms → `lightning-rainy`
+https://content.meteoblue.com/en/research-education/specifications/standards/symbols-and-pictograms
 
 ## 🐛 Troubleshooting
-
-### Common Issues
-
-| Problem                    | Solution                                                |
-| -------------------------- | ------------------------------------------------------- |
-| ❌ **Invalid API Key**     | Verify your Meteoblue API key is correct and active     |
-| 🌐 **Cannot Connect**      | Check internet connection and API endpoint availability |
-| ⏱️ **Rate Limit Exceeded** | Reduce polling frequency or check API usage limits      |
-| 📍 **Wrong Location Data** | Verify latitude/longitude coordinates are correct       |
 
 ### Debug Logging
 
@@ -137,21 +108,13 @@ The integration includes comprehensive debug logging that can be easily controll
 - Entity state changes and updates
 - Error conditions with full context
 
-## 📊 API Limits
-
-**Free Tier Limits:**
-
-- 🎯 1,000+ calls per day
-- ⚡ 500 calls per minute
-- 📈 Monitor usage in [Meteoblue Dashboard](https://www.meteoblue.com/)
-
 ## 🤝 Contributing
 
 Found a bug or have a feature request?
 
-- 🐛 [Report Issues](https://github.com/ludwig/meteoblue-home-assistant/issues)
-- 💡 [Request Features](https://github.com/ludwig/meteoblue-home-assistant/discussions)
-- 🔧 [Submit Pull Requests](https://github.com/ludwig/meteoblue-home-assistant/pulls)
+- 🐛 [Report Issues](https://github.com/lud-hu/home-assistant-meteo-blue/issues)
+- 💡 [Request Features](https://github.com/lud-hu/home-assistant-meteo-blue/issues)
+- 🔧 [Submit Pull Requests](https://github.com/lud-hu/home-assistant-meteo-blue/pulls)
 
 ## 📜 License
 
